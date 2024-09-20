@@ -84,6 +84,12 @@ class MemberJpaRepositoryTest {
 
         List<Member> result = memberJpaRepository.findByUsername("AAA");
         Member findMember = result.get(0);
-        assertThat(findMember).isEqualTo(m1);
+
+        // 필드별로 비교
+        assertThat(findMember.getUsername()).isEqualTo(m1.getUsername());
+        assertThat(findMember.getAge()).isEqualTo(m1.getAge());
     }
+    //자동 생성된 id값이 비교 대상에서 제외됨.
+
+
 }
