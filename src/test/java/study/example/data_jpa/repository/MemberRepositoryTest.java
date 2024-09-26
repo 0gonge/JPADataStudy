@@ -169,7 +169,7 @@ class MemberRepositoryTest {
         //when
         Page<Member> page = memberRepository.findByAge(age, pageRequest);
 
-        Page<MemberDto> toMap = page.map(m -> new MemberDto(member.getId(), member.getUsername(), null));
+//        Page<MemberDto> toMap = page.map(m -> new MemberDto(member.getId(), member.getUsername(), null));
         //then
         List<Member> content = page.getContent();
         long totalElements = page.getTotalElements();
