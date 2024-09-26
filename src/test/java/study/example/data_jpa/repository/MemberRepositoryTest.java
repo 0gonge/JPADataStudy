@@ -26,8 +26,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @Rollback(false)
 class MemberRepositoryTest {
 
-    @Autowired MemberRepository memberRepository;
-    @Autowired TeamRepository teamRepository;
+    @Autowired
+    MemberRepository memberRepository;
+    @Autowired
+    TeamRepository teamRepository;
     @PersistenceContext
     EntityManager em;
 
@@ -106,9 +108,10 @@ class MemberRepositoryTest {
         memberRepository.save(m1);
         memberRepository.save(m2);
 
-        List<Member> result = memberRepository.findUser("AAA",10);
+        List<Member> result = memberRepository.findUser("AAA", 10);
         assertThat(result.get(0)).isEqualTo(m1);
     }
+
     @Test
     public void findUsernameList() {
         Member m1 = new Member("AAA", 10);
@@ -132,27 +135,28 @@ class MemberRepositoryTest {
         memberRepository.save(m1);
 
         List<MemberDto> memberDto = memberRepository.findMemberDto();
-        for(MemberDto dto : memberDto) {
+        for (MemberDto dto : memberDto) {
             System.out.println("dto = " + dto);
         }
     }
 
     @Test
     public void findByNames() {
-        Member m1 = new Member("AAA",10);
-        Member m2 = new Member("BBB",20);
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("BBB", 20);
         memberRepository.save(m1);
         memberRepository.save(m2);
 
         List<Member> result = memberRepository.findByNames(Arrays.asList("AAA", "BBB"));
-        for (Member member : result ) {
+        for (Member member : result) {
             System.out.println("member = " + member);
         }
     }
+
     @Test
     public void returnType() {
-        Member m1 = new Member("AAA",10);
-        Member m2 = new Member("BBB",20);
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("BBB", 20);
         memberRepository.save(m1);
         memberRepository.save(m2);
 
@@ -187,6 +191,7 @@ class MemberRepositoryTest {
         assertThat(page.hasNext()).isTrue();
 
     }
+
     @Test
     public void bulkUpdate() {
         memberRepository.save(new Member("member1", 10));
@@ -196,8 +201,8 @@ class MemberRepositoryTest {
         memberRepository.save(new Member("member5", 40));
         //when
         int resultCount = memberRepository.bulkAgePlus(20);
-        em.flush();
-        em.clear();
+//        em.flush();
+//        em.clear();
 
         List<Member> result = memberRepository.findByUsername("member5");
         Member member5 = result.get(0);
@@ -206,4 +211,31 @@ class MemberRepositoryTest {
         assertThat(resultCount).isEqualTo(3);
 
     }
+
+    @Test
+    public void findMemberLazy() throws Exception {
+        //given
+        //member1 -> teamA
+        //member2 -> teamB
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        memberRepository.save(new Member("member1", 10, teamA));
+        memberRepository.save(new Member("member2", 20, teamB));
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findMemberFetchJoin();
+        //then
+        for (Member member : members) {
+            System.out.println("member.getUsername() = " + member.getUsername());
+            System.out.println("member.getTeam().getName() = " + member.getTeam().getName());
+        }
+    }
+
+
 }
