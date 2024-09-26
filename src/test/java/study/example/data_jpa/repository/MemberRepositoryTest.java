@@ -1,5 +1,7 @@
 package study.example.data_jpa.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +28,9 @@ class MemberRepositoryTest {
 
     @Autowired MemberRepository memberRepository;
     @Autowired TeamRepository teamRepository;
+    @PersistenceContext
+    EntityManager em;
+
     @Test
     public void testMember() {
         Member member = new Member("memberA");
@@ -191,6 +196,8 @@ class MemberRepositoryTest {
         memberRepository.save(new Member("member5", 40));
         //when
         int resultCount = memberRepository.bulkAgePlus(20);
+        em.flush();
+        em.clear();
 
         List<Member> result = memberRepository.findByUsername("member5");
         Member member5 = result.get(0);
